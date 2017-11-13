@@ -1,0 +1,14 @@
+*.class
+*.iml
+*.jar
+.DS_Store
+.idea
+/.lein-*
+/.nrepl-port
+/checkouts
+/classes
+/target
+/vendor
+deps.txt
+pom.xml
+pom.xml.asc
