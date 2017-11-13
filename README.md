@@ -8,9 +8,9 @@ A Clojure library designed to provide wrappers for Prometheus [SimpleClient](htt
 
 #### Leiningen
 
-prometheus-clj is available from [Clojars](https://clojars.org/prom-metrics/prom-metrics).
+Prometheus Metrics is available from [Clojars](https://clojars.org/prom-metrics/prom-metrics).
 
-![Clojars Project](http://clojars.org/prom-metrics/prom-metrics/latest-version.svg)
+[![Clojars Project](http://clojars.org/prom-metrics/prom-metrics/latest-version.svg)](https://clojars.org/prom-metrics/prom-metrics)
 
 ## Concepts
 
