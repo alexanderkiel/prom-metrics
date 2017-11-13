@@ -210,7 +210,7 @@
 
 (extend-protocol-inc Counter Counter$Child Gauge Gauge$Child)
 
-(defmacro ^:private collect-fn [fn n]
+(defmacro ^:private collect-fn-opt-amount [fn n]
   `(fn
      ([~'x]
        (~fn (collector ~'x) 1))
@@ -229,7 +229,7 @@
   ^{:doc "Increments a counter or gauge by the given amount or 1."
     :arglists '([collector & labels] [collector & labels amount])}
   inc!
-  (collect-fn inc- 4))
+  (collect-fn-opt-amount inc- 4))
 
 (defprotocol Dec
   (dec- [x amount]))
@@ -247,7 +247,7 @@
   ^{:doc "Decrements a gauge by the given amount or 1."
     :arglists '([gauge & labels] [gauge & labels amount])}
   dec!
-  (collect-fn dec- 4))
+  (collect-fn-opt-amount dec- 4))
 
 (defprotocol Set
   (set- [x amount]))
@@ -266,11 +266,20 @@
   (set- [histogram _]
     (throw (Exception. "It's not possible to setrement a histogram."))))
 
+(defmacro ^:private collect-fn-req-amount [fn n]
+  `(fn
+     ~@(for [i (range n)]
+         `([~'x ~@(label-syms i) ~'amount]
+            (~fn (collector ~'x ~@(label-syms i)) ~'amount)))
+     ([~'x ~@(label-syms n) & ~'labels-and-amount]
+       (~fn (apply collector ~'x ~@(label-syms n) (butlast ~'labels-and-amount))
+         (last ~'labels-and-amount)))))
+
 (def
   ^{:doc "Sets a gauge to the given amount."
     :arglists '([gauge & labels amount])}
   set!
-  (collect-fn set- 4))
+  (collect-fn-req-amount set- 4))
 
 (defprotocol Get
   (get- [x]))
@@ -312,11 +321,11 @@
 
 (extend-protocol-observe Histogram Histogram$Child Summary Summary$Child)
 
-(defn observe!
-  "Observes a given amount to a histogram or summary."
-  {:arglists '([collector & labels amount])}
-  [x amount]
-  (observe- (collector x) amount))
+(def
+  ^{:doc "Observes a given amount to a histogram or summary."
+    :arglists '([collector & labels amount])}
+  observe!
+  (collect-fn-req-amount observe- 4))
 
 (defprotocol StartTimer
   (start-timer- [x]))

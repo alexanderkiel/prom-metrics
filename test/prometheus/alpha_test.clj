@@ -229,12 +229,22 @@
       (prom/observe-duration! timer))
     (is (pos? (prom/sum :histogram))))
 
+  (testing "Use observe on histogram."
+    (prom/clear! :histogram)
+    (prom/observe! :histogram 2))
+  (is (= 2.0 (prom/sum :histogram)))
+
   (testing "Use timer on histogram with one label."
     (prom/clear! :histogram/one_label)
     (let [timer (prom/timer :histogram/one_label "label-1")]
       (inc 1)
       (prom/observe-duration! timer))
     (is (pos? (prom/sum :histogram/one_label "label-1"))))
+
+  (testing "Use observe on histogram with one label."
+    (prom/clear! :histogram/one_label)
+    (prom/observe! :histogram/one_label "label-1" 2)
+    (is (= 2.0 (prom/sum :histogram/one_label "label-1"))))
 
   (testing "Use timer on histogram with one label from var."
     (prom/clear! :histogram/one_label)
@@ -279,7 +289,7 @@
 
   (quick-bench (prom/timer :histogram/two_labels "label-1" "label-2")) ; 204 ns
   (let [collector (prom/collector :histogram/two_labels "label-1" "label-2")]
-    (quick-bench (prom/timer collector))) ; 57 ns
+    (quick-bench (prom/timer collector)))                   ; 57 ns
 
   (clojure.repl/pst)
   )
