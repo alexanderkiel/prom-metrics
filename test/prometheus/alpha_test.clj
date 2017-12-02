@@ -267,29 +267,51 @@
   (require '[criterium.core :refer [quick-bench bench]])
 
   ;; JDK 1.8.0_152
-  (quick-bench (prom/inc! :counter))                        ; 34 ns
-  (quick-bench (prom/inc! counter))                         ; 23 ns
-  (quick-bench (prom/inc! :counter/one_label "label-1"))    ; 122 ns
-  (quick-bench (prom/inc! counter-one-label "label-1"))     ; 60 ns
+
+  ;; 30 ns
+  (quick-bench (prom/inc! :counter))
+
+  ;; 19 ns
+  (quick-bench (prom/inc! counter))
+
+  ;; 85 ns
+  (quick-bench (prom/inc! :counter/one_label "label-1"))
+
+  ;; 46 ns
+  (quick-bench (prom/inc! counter-one-label "label-1"))
+
+  ;; 20 ns
   (let [counter (prom/collector counter-one-label "label-1")]
-    (quick-bench (prom/inc! counter)))                      ; 20 ns
-  (quick-bench (prom/inc! :counter/two_labels "label-1" "label-2")) ; 121 ns
-  (quick-bench (prom/inc! counter-two-labels "label-1" "label-2")) ; 76 ns
+    (quick-bench (prom/inc! counter)))
+
+  ;; 121 ns
+  (quick-bench (prom/inc! :counter/two_labels "label-1" "label-2"))
+
+  ;; 65 ns
+  (quick-bench (prom/inc! counter-two-labels "label-1" "label-2"))
+
+  ;; 21 ns
   (let [counter (prom/collector counter-two-labels "label-1" "label-2")]
-    (quick-bench (prom/inc! counter)))                      ; 20 ns
-  (quick-bench (prom/inc! :counter/three_labels "label-1" "label-2" "label-3")) ; 108 ns
-  (quick-bench (prom/inc! counter-three-labels "label-1" "label-2" "label-3")) ; 68 ns
+    (quick-bench (prom/inc! counter)))
+
+  ;; 125 ns
+  (quick-bench (prom/inc! :counter/three_labels "label-1" "label-2" "label-3"))
+
+  ;; 60 ns
+  (quick-bench (prom/inc! counter-three-labels "label-1" "label-2" "label-3"))
+
+  ;; 19 ns
   (let [counter (prom/collector counter-three-labels "label-1" "label-2" "label-3")]
-    (quick-bench (prom/inc! counter)))                      ; 20 ns
-  (quick-bench (prom/inc! :counter/four_labels "label-1" "label-2" "label-3" "label-4")) ; 863 ns
-  (prom/get :counter)
-  (prom/get :counter/one_label "label-1")
-  (prom/get :counter/three_labels "label-1" "label-2" "label-3")
-  (prom/get :counter/four_labels "label-1" "label-2" "label-3" "label-4")
+    (quick-bench (prom/inc! counter)))
 
-  (quick-bench (prom/timer :histogram/two_labels "label-1" "label-2")) ; 204 ns
+  ;; 773 ns
+  (quick-bench (prom/inc! :counter/four_labels "label-1" "label-2" "label-3" "label-4"))
+
+  ;; 169 ns
+  (quick-bench (prom/timer :histogram/two_labels "label-1" "label-2"))
+
+  ;; 56 ns
   (let [collector (prom/collector :histogram/two_labels "label-1" "label-2")]
-    (quick-bench (prom/timer collector)))                   ; 57 ns
+    (quick-bench (prom/timer collector)))
 
-  (clojure.repl/pst)
   )
