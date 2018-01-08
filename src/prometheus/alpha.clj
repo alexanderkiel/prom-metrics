@@ -277,7 +277,10 @@
 
 (def
   ^{:doc "Sets a gauge to the given amount."
-    :arglists '([gauge & labels amount])}
+    :arglists
+    '([gauge amount]
+       [gauge label amount]
+       [gauge & labels amount])}
   set!
   (collect-fn-req-amount set- 4))
 
@@ -323,7 +326,10 @@
 
 (def
   ^{:doc "Observes a given amount to a histogram or summary."
-    :arglists '([collector & labels amount])}
+    :arglists
+    '([collector amount]
+       [collector label amount]
+       [collector & labels amount])}
   observe!
   (collect-fn-req-amount observe- 4))
 
