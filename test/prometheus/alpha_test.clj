@@ -219,13 +219,13 @@
   (testing "Use timer on histogram and close it through with-open."
     (prom/clear! :histogram)
     (with-open [_ (prom/timer :histogram)]
-      (inc 1))
+      (Thread/sleep 1))
     (is (pos? (prom/sum :histogram))))
 
   (testing "Use timer on histogram."
     (prom/clear! :histogram)
     (let [timer (prom/timer :histogram)]
-      (inc 1)
+      (Thread/sleep 1)
       (prom/observe-duration! timer))
     (is (pos? (prom/sum :histogram))))
 
@@ -237,7 +237,7 @@
   (testing "Use timer on histogram with one label."
     (prom/clear! :histogram/one_label)
     (let [timer (prom/timer :histogram/one_label "label-1")]
-      (inc 1)
+      (Thread/sleep 1)
       (prom/observe-duration! timer))
     (is (pos? (prom/sum :histogram/one_label "label-1"))))
 
@@ -249,14 +249,14 @@
   (testing "Use timer on histogram with one label from var."
     (prom/clear! :histogram/one_label)
     (let [timer (prom/timer histogram-one-label "label-1")]
-      (inc 1)
+      (Thread/sleep 1)
       (prom/observe-duration! timer))
     (is (pos? (prom/sum :histogram/one_label "label-1"))))
 
   (testing "Use timer on histogram with one label from var 2."
     (prom/clear! :histogram/one_label)
     (let [timer (prom/timer (prom/collector histogram-one-label "label-1"))]
-      (inc 1)
+      (Thread/sleep 1)
       (prom/observe-duration! timer))
     (is (pos? (prom/sum :histogram/one_label "label-1"))))
 
