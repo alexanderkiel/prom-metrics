@@ -15,4 +15,7 @@
   :profiles {:dev {:dependencies [[criterium "0.4.4"]]}
              :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
              :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
-             :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}})
+             :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}}
+
+  :aliases
+  {"lint" ["eastwood" "{:linters [:all]}"]})

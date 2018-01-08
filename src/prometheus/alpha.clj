@@ -1,6 +1,4 @@
 (ns prometheus.alpha
-  (:require
-    [clojure.string :as str])
   (:import
     [clojure.lang Keyword PersistentVector]
     [io.prometheus.client Counter Histogram Counter$Child Histogram$Child CollectorRegistry Gauge Gauge$Child Collector SimpleCollector SimpleCollector$Builder Histogram$Timer Summary Summary$Timer Summary$Child Histogram$Child$Value]
@@ -132,10 +130,6 @@
   (.unregister (CollectorRegistry/defaultRegistry) c)
   (swap! registry dissoc k c))
 
-(defn- clear-registry! []
-  (.clear (CollectorRegistry/defaultRegistry))
-  (reset! registry {}))
-
 (defn- ^SimpleCollector$Builder with-namespace
   [^SimpleCollector$Builder builder keyword]
   (if-let [namespace (namespace keyword)]
@@ -263,8 +257,8 @@
 
 (extend-protocol Set
   Histogram$Child
-  (set- [histogram _]
-    (throw (Exception. "It's not possible to setrement a histogram."))))
+  (set- [_ _]
+    (throw (Exception. "It's not possible to set the value of a histogram."))))
 
 (defmacro ^:private collect-fn-req-amount [fn n]
   `(fn
