@@ -77,6 +77,18 @@
   [0.0 1.0]
   "label_name_1" "label_name_2")
 
+(defhistogram
+  :histogram/four_labels
+  "Histogram with four labels."
+  [0.0 1.0]
+  "label_name_1" "label_name_2" "label_name_3" "label_name_4")
+
+(defhistogram
+  :histogram/five_labels
+  "Histogram with five labels."
+  [0.0 1.0]
+  "label_name_1" "label_name_2" "label_name_3" "label_name_4" "label_name_5")
+
 (deftest counter-test
   (testing "Increment counter."
     (prom/clear! :counter)
@@ -241,6 +253,31 @@
       (prom/observe-duration! timer))
     (is (pos? (prom/sum :histogram/one_label "label-1"))))
 
+  (testing "Use timer on histogram with two labels."
+    (prom/clear! :histogram/two_labels)
+    (let [timer (prom/timer :histogram/two_labels "label-1" "label-2")]
+      (Thread/sleep 1)
+      (prom/observe-duration! timer))
+    (is (pos? (prom/sum :histogram/two_labels "label-1" "label-2"))))
+
+  (testing "Use timer on histogram with four labels."
+    (prom/clear! :histogram/four_labels)
+    (let [timer (prom/timer :histogram/four_labels "label-1" "label-2"
+                            "label-3" "label-4")]
+      (Thread/sleep 1)
+      (prom/observe-duration! timer))
+    (is (pos? (prom/sum :histogram/four_labels "label-1" "label-2"
+                        "label-3" "label-4"))))
+
+  (testing "Use timer on histogram with five labels."
+    (prom/clear! :histogram/five_labels)
+    (let [timer (prom/timer :histogram/five_labels "label-1" "label-2"
+                            "label-3" "label-4" "label-5")]
+      (Thread/sleep 1)
+      (prom/observe-duration! timer))
+    (is (pos? (prom/sum :histogram/five_labels "label-1" "label-2"
+                        "label-3" "label-4" "label-5"))))
+
   (testing "Use observe on histogram with one label."
     (prom/clear! :histogram/one_label)
     (prom/observe! :histogram/one_label "label-1" 2)
@@ -307,8 +344,16 @@
   ;; 773 ns
   (quick-bench (prom/inc! :counter/four_labels "label-1" "label-2" "label-3" "label-4"))
 
-  ;; 169 ns
+  ;; 125 ns
   (quick-bench (prom/timer :histogram/two_labels "label-1" "label-2"))
+
+  ;; 995 ns
+  (quick-bench (prom/timer :histogram/four_labels "label-1" "label-2"
+                           "label-3" "label-4"))
+
+  ;; 1 us
+  (quick-bench (prom/timer :histogram/five_labels "label-1" "label-2"
+                           "label-3" "label-4" "label-5"))
 
   ;; 56 ns
   (let [collector (prom/collector :histogram/two_labels "label-1" "label-2")]

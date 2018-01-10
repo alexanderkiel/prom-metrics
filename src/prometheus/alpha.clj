@@ -346,7 +346,9 @@
   `(fn
      ~@(for [i (range n)]
          `([~'x ~@(label-syms i)]
-            (~fn (collector ~'x ~@(label-syms i)))))))
+            (~fn (collector ~'x ~@(label-syms i)))))
+     ([~'x ~@(label-syms (dec n)) & ~'labels]
+       (~fn (apply collector ~'x ~@(label-syms (dec n)) ~'labels)))))
 
 (def
   ^{:doc "Returns a timer of a gauge, histogram or summary.
