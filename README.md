@@ -29,13 +29,13 @@ Require prometheus alpha.
 Define a counter:
 
 ```clojure
-(prom/defcounter :counter "A counter.")
+(prom/defcounter counter "A counter.")
 ```
 
 Increment the counter:
 
 ```clojure
-(prom/inc! :counter)
+(prom/inc! counter)
 ```
 
 Create a compojure route so that the prometheus server can poll your application for metrics.

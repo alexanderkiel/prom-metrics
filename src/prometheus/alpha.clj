@@ -1,7 +1,11 @@
 (ns prometheus.alpha
+  (:require
+    [clojure.string :as str])
   (:import
-    [clojure.lang Keyword PersistentVector]
-    [io.prometheus.client Counter Histogram Counter$Child Histogram$Child CollectorRegistry Gauge Gauge$Child Collector SimpleCollector SimpleCollector$Builder Histogram$Timer Summary Summary$Timer Summary$Child Histogram$Child$Value]
+    [io.prometheus.client Counter Histogram Counter$Child Histogram$Child
+                          CollectorRegistry Gauge Gauge$Child Collector
+                          SimpleCollector Histogram$Timer Summary Summary$Timer
+                          Summary$Child Histogram$Child$Value]
     [io.prometheus.client.exporter.common TextFormat]
     [io.prometheus.client.hotspot DefaultExports]
     [java.io StringWriter Closeable])
@@ -11,8 +15,6 @@
 
 (defn register-default-exports! []
   (DefaultExports/initialize))
-
-(defonce ^:private registry (atom {}))
 
 (defn collector? [x]
   (instance? Collector x))
@@ -84,100 +86,133 @@
   (collector-
     ([c] c))
 
-  Keyword
-  (collector-
-    ([k] (clojure.core/get @registry k))
-    ([k label]
-     (collector- (collector- k) label))
-    ([k label-1 label-2]
-     (collector- (collector- k) label-1 label-2))
-    ([k label-1 label-2 label-3]
-     (collector- (collector- k) label-1 label-2 label-3))
-    ([k label-1 label-2 label-3 labels]
-     (collector- (collector- k) label-1 label-2 label-3 labels)))
-
   Object
   (collector- [_]))
 
 (defn collector
-  "Coerce to collector. Throws an Exception if undefined."
+  "Coerce to collector."
   ([x]
-   (if-let [collector (collector- x)]
-     collector
-     (throw (Exception. (str "Unknown collector " x)))))
+   (collector- x))
   ([x label]
-   (if-let [collector (collector- x label)]
-     collector
-     (throw (Exception. (str "Unknown collector " x)))))
+   (collector- x label))
   ([x label-1 label-2]
-   (if-let [collector (collector- x label-1 label-2)]
-     collector
-     (throw (Exception. (str "Unknown collector " x)))))
+   (collector- x label-1 label-2))
   ([x label-1 label-2 label-3]
-   (if-let [collector (collector- x label-1 label-2 label-3)]
-     collector
-     (throw (Exception. (str "Unknown collector " x)))))
+   (collector- x label-1 label-2 label-3))
   ([x label-1 label-2 label-3 & labels]
-   (if-let [collector (collector- x label-1 label-2 label-3 labels)]
-     collector
-     (throw (Exception. (str "Unknown collector " x))))))
+   (collector- x label-1 label-2 label-3 labels)))
 
-(defn- register! [c k]
-  (swap! registry assoc k c)
-  (.register (CollectorRegistry/defaultRegistry) c))
+(defn swap-collector [old new]
+  (when (instance? Collector old)
+    (.unregister (CollectorRegistry/defaultRegistry) old))
+  (.register (CollectorRegistry/defaultRegistry) new)
+  new)
 
-(defn- unregister! [c k]
-  (.unregister (CollectorRegistry/defaultRegistry) c)
-  (swap! registry dissoc k c))
+(defn- collector-name [name]
+  (str/replace name \- \_))
 
-(defn- ^SimpleCollector$Builder with-namespace
-  [^SimpleCollector$Builder builder keyword]
-  (if-let [namespace (namespace keyword)]
-    (.namespace builder namespace)
-    builder))
+(defn create-counter [name help & more]
+  (let [{:keys [namespace subsystem] :as attr-map} (when (map? (first more)) (first more))
+        label-names (if attr-map (next more) more)]
+    (-> (-> (Counter/build)
+            (.name (or (:name attr-map) (collector-name name)))
+            (.help help))
+        (cond->
+          namespace (.namespace namespace)
+          subsystem (.subsystem subsystem)
+          label-names (.labelNames (into-array String label-names)))
+        (.create))))
 
-(defn defcounter
-  "Given a namespace-qualified keyword, a help text and label-names, registers
-  a counter in the default registry."
-  [keyword help & label-names]
-  (when-let [counter (collector- keyword)]
-    (unregister! counter keyword))
-  (-> (Counter/build)
-      (with-namespace keyword)
-      (.name (name keyword))
-      (.labelNames (into-array String label-names))
-      (.help help)
-      (.create)
-      (register! keyword)))
+(defmacro defcounter
+  "Defines a counter as var with name.
 
-(defn defgauge
-  "Given a namespace-qualified keyword, a help text and label-names, registers
-  a gauge in the default registry."
-  [keyword help & label-names]
-  (when-let [gauge (collector- keyword)]
-    (unregister! gauge keyword))
-  (-> (Gauge/build)
-      (with-namespace keyword)
-      (.name (name keyword))
-      (.labelNames (into-array String label-names))
-      (.help help)
-      (.create)
-      (register! keyword)))
+  Metrics are required to have a name and a help text. An optional namespace and
+  subsystem can be defined via attr-map. The metrics name can be overridden by
+  name in attr-map. Per default the var name is used with dashes replaced by
+  underscores. The full name of the metric is `namespace_subsystem_name` and has
+  to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
 
-(defn defhistogram
-  "Given a namespace-qualified keyword, a help text, label-names and buckets,
-  registers a histogram in the default registry."
-  [keyword help buckets & label-names]
-  (when-let [histogram (collector- keyword)]
-    (unregister! histogram keyword))
-  (-> (Histogram/build)
-      (.buckets (double-array buckets))
-      (with-namespace keyword)
-      (.name (name keyword))
-      (.help help)
-      (.labelNames (into-array String label-names))
-      (.create)
-      (register! keyword)))
+  Labels are used to provide dimensions to metrics. For example: a counter
+  defined with two labels has two dimensions for which you have to supply values
+  when incrementing.
+
+  Replaces already defined collectors with the same name."
+  {:arglists '([name help attr-map? & label-names])}
+  [name help & more]
+  `(let [c# (create-counter ~(clojure.core/name name) ~help ~@more)
+         v# (def ~name)]
+     (alter-var-root v# swap-collector c#)
+     v#))
+
+(defn create-gauge [name help & more]
+  (let [{:keys [namespace subsystem] :as attr-map} (when (map? (first more)) (first more))
+        label-names (if attr-map (next more) more)]
+    (-> (-> (Gauge/build)
+            (.name (or (:name attr-map) (collector-name name)))
+            (.help help))
+        (cond->
+          namespace (.namespace namespace)
+          subsystem (.subsystem subsystem)
+          label-names (.labelNames (into-array String label-names)))
+        (.create))))
+
+(defmacro defgauge
+  "Defines a gauge as var with name.
+
+  Metrics are required to have a name and a help text. An optional namespace and
+  subsystem can be defined via attr-map. The metrics name can be overridden by
+  name in attr-map. Per default the var name is used with dashes replaced by
+  underscores. The full name of the metric is `namespace_subsystem_name` and has
+  to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
+
+  Labels are used to provide dimensions to metrics. For example: a gauge
+  defined with two labels has two dimensions for which you have to supply values
+  when incrementing.
+
+  Replaces already defined collectors with the same name."
+  {:arglists '([name help attr-map? & label-names])}
+  [name help & more]
+  `(let [c# (create-gauge ~(clojure.core/name name) ~help ~@more)
+         v# (def ~name)]
+     (alter-var-root v# swap-collector c#)
+     v#))
+
+(defn create-histogram [name help & more]
+  (let [{:keys [namespace subsystem] :as attr-map} (when (map? (first more)) (first more))
+        buckets (if attr-map (second more) (first more))
+        label-names (if attr-map (nnext more) (next more))]
+    (-> (-> (Histogram/build)
+            (.buckets (double-array buckets))
+            (.name (or (:name attr-map) (collector-name name)))
+            (.help help))
+        (cond->
+          namespace (.namespace namespace)
+          subsystem (.subsystem subsystem)
+          label-names (.labelNames (into-array String label-names)))
+        (.create))))
+
+(defmacro defhistogram
+  "Defines a histogram as var with name.
+
+  Metrics are required to have a name and a help text. An optional namespace and
+  subsystem can be defined via attr-map. The metrics name can be overridden by
+  name in attr-map. Per default the var name is used with dashes replaced by
+  underscores. The full name of the metric is `namespace_subsystem_name` and has
+  to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
+
+  Buckets is a collection of upper bounds of buckets for the histogram.
+
+  Labels are used to provide dimensions to metrics. For example: a histogram
+  defined with two labels has two dimensions for which you have to supply values
+  when incrementing.
+
+  Replaces already defined collectors with the same name."
+  {:arglists '([name help attr-map? buckets & label-names])}
+  [name help & more]
+  `(let [c# (create-histogram ~(clojure.core/name name) ~help ~@more)
+         v# (def ~name)]
+     (alter-var-root v# swap-collector c#)
+     v#))
 
 (defprotocol Clear
   (clear- [x]))
@@ -190,7 +225,7 @@
   "Clears all metrics of the collector. After calling clear! captured labeled
   instances are detached."
   [x]
-  (clear- (collector x)))
+  (clear- (collector- x)))
 
 (defprotocol Inc
   (inc- [x amount]))
@@ -207,23 +242,23 @@
 (defmacro ^:private collect-fn-opt-amount [fn n]
   `(fn
      ([~'x]
-       (~fn (collector ~'x) 1))
+       (~fn (collector- ~'x) 1))
      ~@(for [i (range n)]
          `([~'x ~@(label-syms i) ~'label-or-amount]
             (if (string? ~'label-or-amount)
-              (~fn (collector ~'x ~@(label-syms i) ~'label-or-amount) 1)
-              (~fn (collector ~'x ~@(label-syms i)) ~'label-or-amount))))
+              (~fn (collector- ~'x ~@(label-syms i) ~'label-or-amount) 1)
+              (~fn (collector- ~'x ~@(label-syms i)) ~'label-or-amount))))
      ([~'x ~@(label-syms n) & ~'labels]
        (if (string? (last ~'labels))
-         (~fn (apply collector ~'x ~@(label-syms n) ~'labels) 1)
-         (~fn (apply collector ~'x ~@(label-syms n) (butlast ~'labels))
+         (~fn (collector- ~'x ~@(label-syms n) ~'labels) 1)
+         (~fn (collector- ~'x ~@(label-syms n) (butlast ~'labels))
            (last ~'labels))))))
 
 (def
   ^{:doc "Increments a counter or gauge by the given amount or 1."
-    :arglists '([collector & labels] [collector & labels amount])}
+    :arglists '([collector & labels-and-amount])}
   inc!
-  (collect-fn-opt-amount inc- 4))
+  (collect-fn-opt-amount inc- 3))
 
 (defprotocol Dec
   (dec- [x amount]))
@@ -239,9 +274,9 @@
 
 (def
   ^{:doc "Decrements a gauge by the given amount or 1."
-    :arglists '([gauge & labels] [gauge & labels amount])}
+    :arglists '([gauge & labels-and-amount])}
   dec!
-  (collect-fn-opt-amount dec- 4))
+  (collect-fn-opt-amount dec- 3))
 
 (defprotocol Set
   (set- [x amount]))
@@ -264,9 +299,9 @@
   `(fn
      ~@(for [i (range n)]
          `([~'x ~@(label-syms i) ~'amount]
-            (~fn (collector ~'x ~@(label-syms i)) ~'amount)))
+            (~fn (collector- ~'x ~@(label-syms i)) ~'amount)))
      ([~'x ~@(label-syms n) & ~'labels-and-amount]
-       (~fn (apply collector ~'x ~@(label-syms n) (butlast ~'labels-and-amount))
+       (~fn (collector- ~'x ~@(label-syms n) (butlast ~'labels-and-amount))
          (last ~'labels-and-amount)))))
 
 (def
@@ -276,7 +311,7 @@
        [gauge label amount]
        [gauge & labels amount])}
   set!
-  (collect-fn-req-amount set- 4))
+  (collect-fn-req-amount set- 3))
 
 (defprotocol Get
   (get- [x]))
@@ -300,11 +335,19 @@
   Histogram
   (get- [histogram] (get- (.labels histogram empty-string-array))))
 
-(defn get
-  "Gets the current value of a counter, gauge histogram or summary."
-  {:arglists '([collector & labels])}
-  ([x] (get- (collector x)))
-  ([x & labels] (get- (apply collector x labels))))
+(defmacro ^:private collect-fn-2 [fn n]
+  `(fn
+     ~@(for [i (range n)]
+         `([~'x ~@(label-syms i)]
+            (~fn (collector- ~'x ~@(label-syms i)))))
+     ([~'x ~@(label-syms (dec n)) & ~'labels]
+       (~fn (collector- ~'x ~@(label-syms (dec n)) ~'labels)))))
+
+(def
+  ^{:doc "Gets the current value of a counter, gauge histogram or summary."
+    :arglists '([collector & labels])}
+  get
+  (collect-fn-2 get- 4))
 
 (defprotocol Observe
   (observe- [x amount]))
@@ -321,11 +364,9 @@
 (def
   ^{:doc "Observes a given amount to a histogram or summary."
     :arglists
-    '([collector amount]
-       [collector label amount]
-       [collector & labels amount])}
+    '([collector & labels-and-amount])}
   observe!
-  (collect-fn-req-amount observe- 4))
+  (collect-fn-req-amount observe- 3))
 
 (defprotocol StartTimer
   (start-timer- [x]))
@@ -341,14 +382,6 @@
   Gauge Gauge$Child
   Histogram Histogram$Child
   Summary Summary$Child)
-
-(defmacro ^:private collect-fn-2 [fn n]
-  `(fn
-     ~@(for [i (range n)]
-         `([~'x ~@(label-syms i)]
-            (~fn (collector ~'x ~@(label-syms i)))))
-     ([~'x ~@(label-syms (dec n)) & ~'labels]
-       (~fn (apply collector ~'x ~@(label-syms (dec n)) ~'labels)))))
 
 (def
   ^{:doc "Returns a timer of a gauge, histogram or summary.
