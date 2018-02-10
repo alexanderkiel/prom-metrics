@@ -7,9 +7,9 @@
   :min-lein-version "2.6.0"
   :pedantic? :abort
 
-  :dependencies [[io.prometheus/simpleclient "0.1.0"]
-                 [io.prometheus/simpleclient_hotspot "0.1.0"]
-                 [io.prometheus/simpleclient_common "0.1.0"]
+  :dependencies [[io.prometheus/simpleclient "0.2.0"]
+                 [io.prometheus/simpleclient_hotspot "0.2.0"]
+                 [io.prometheus/simpleclient_common "0.2.0"]
                  [org.clojure/clojure "1.8.0"]]
 
   :profiles {:dev {:dependencies [[criterium "0.4.4"]]}
