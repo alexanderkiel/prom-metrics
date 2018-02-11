@@ -14,10 +14,6 @@ Prometheus Metrics is available from [Clojars](https://clojars.org/prom-metrics/
 
 [![Clojars Project](http://clojars.org/prom-metrics/prom-metrics/latest-version.svg)](https://clojars.org/prom-metrics/prom-metrics)
 
-## Concepts
-
-This library embraces the usage of one central registry where all collectors are registered. It provides `def` functions life `defcounter` for each collector of the Java library. Defined collectors are named by keywords which can have namespaces. All functions mutating collectors accept the keyword of a collector. In each JVM there is a global space of named collectors.
-
 ## Usage
 
 Require prometheus alpha.
