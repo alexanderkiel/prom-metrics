@@ -1,4 +1,4 @@
-(defproject prom-metrics "0.2-alpha1"
+(defproject prom-metrics "0.3-SNAPSHOT"
   :description "Clojure Wrappers for the Prometheus Java Client."
   :url "https://github.com/alexanderkiel/prom-metrics"
   :license {:name "Eclipse Public License"
