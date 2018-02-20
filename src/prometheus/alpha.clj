@@ -328,12 +328,18 @@
 (extend-protocol-get
   Counter Counter$Child
   Gauge Gauge$Child
-  Histogram$Child
   Summary Summary$Child)
 
 (extend-protocol Get
   Histogram
   (get- [histogram] (get- (.labels histogram empty-string-array))))
+
+(extend-protocol Get
+  Histogram$Child
+  (get- [child]
+    (let [value (.get child)]
+      {:histogram/sum (.-sum value)
+       :histogram/buckets (vec (.-buckets value))})))
 
 (defmacro ^:private collect-fn-2 [fn n]
   `(fn
@@ -344,7 +350,10 @@
        (~fn (collector- ~'x ~@(label-syms (dec n)) ~'labels)))))
 
 (def
-  ^{:doc "Gets the current value of a counter, gauge histogram or summary."
+  ^{:doc "Gets the current value of a counter, gauge, histogram or summary.
+
+  For a counter and a gauge the value is a double. For a histogram the value is
+  a map containing a :histogram/sum and a :histogram/buckets value."
     :arglists '([collector & labels])}
   get
   (collect-fn-2 get- 4))
@@ -411,30 +420,6 @@
   "Observes the duration of a histogram or summary timer."
   [timer]
   (observe-duration- timer))
-
-(defprotocol Sum
-  (sum- [x]))
-
-(extend-protocol Sum
-  Histogram$Child$Value
-  (sum- [val] (.-sum val)))
-
-(defn sum
-  "Gets the current sum of a histogram."
-  [histogram & labels]
-  (sum- (apply get histogram labels)))
-
-(defprotocol Buckets
-  (buckets- [x]))
-
-(extend-protocol Buckets
-  Histogram$Child$Value
-  (buckets- [val] (vec (.-buckets val))))
-
-(defn buckets
-  "Gets the current buckets of a histogram."
-  [histogram & labels]
-  (buckets- (apply get histogram labels)))
 
 (defn dump-metrics
   "Dumps metrics of the default registry using simple client's text format."

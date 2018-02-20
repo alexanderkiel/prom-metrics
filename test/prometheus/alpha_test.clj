@@ -164,69 +164,69 @@
   (testing "Use Timer on Histogram and close it through with-open"
     (prom/clear! histogram)
     (with-open [_ (prom/timer histogram)]
-      (inc 1))
-    (is (pos? (prom/sum histogram))))
+      (Thread/sleep 1))
+    (is (pos? (:histogram/sum (prom/get histogram)))))
 
   (testing "Use Timer on Histogram"
     (prom/clear! histogram)
     (let [timer (prom/timer histogram)]
       (Thread/sleep 1)
       (prom/observe-duration! timer))
-    (is (pos? (prom/sum histogram))))
+    (is (pos? (:histogram/sum (prom/get histogram)))))
 
   (testing "Use Observe on Histogram"
     (prom/clear! histogram)
     (prom/observe! histogram 2))
-  (is (= 2.0 (prom/sum histogram)))
+  (is (= 2.0 (:histogram/sum (prom/get histogram))))
 
   (testing "Use Timer on Histogram with One Label"
     (prom/clear! histogram-one-label)
     (let [timer (prom/timer histogram-one-label "label-1")]
       (Thread/sleep 1)
       (prom/observe-duration! timer))
-    (is (pos? (prom/sum histogram-one-label "label-1"))))
+    (is (pos? (:histogram/sum (prom/get histogram-one-label "label-1")))))
 
   (testing "Use Observe on Histogram with One Label"
     (prom/clear! histogram-one-label)
     (prom/observe! histogram-one-label "label-1" 2)
-    (is (= 2.0 (prom/sum histogram-one-label "label-1"))))
+    (is (= 2.0 (:histogram/sum (prom/get histogram-one-label "label-1")))))
 
   (testing "Use Timer on Histogram with Two Labels"
     (prom/clear! histogram-two-labels)
     (let [timer (prom/timer histogram-two-labels "label-1" "label-2")]
       (Thread/sleep 1)
       (prom/observe-duration! timer))
-    (is (pos? (prom/sum histogram-two-labels "label-1" "label-2"))))
+    (is (pos? (:histogram/sum (prom/get histogram-two-labels "label-1" "label-2")))))
 
   (testing "Use Observe on Histogram with Two Labels"
     (prom/clear! histogram-two-labels)
     (prom/observe! histogram-two-labels "label-1" "label-2" 2)
-    (is (= 2.0 (prom/sum histogram-two-labels "label-1" "label-2"))))
+    (is (= 2.0 (:histogram/sum (prom/get histogram-two-labels "label-1" "label-2")))))
 
   (testing "Use Timer on Histogram with Four Labels"
     (prom/clear! histogram-four-labels)
     (let [timer (apply prom/timer histogram-four-labels (label-range 5))]
       (Thread/sleep 1)
       (prom/observe-duration! timer))
-    (is (pos? (apply prom/sum histogram-four-labels (label-range 5)))))
+    (is (pos? (:histogram/sum (apply prom/get histogram-four-labels (label-range 5))))))
 
   (testing "Use Observe on Histogram with Four Labels"
     (prom/clear! histogram-four-labels)
     (prom/observe! histogram-four-labels "label-1" "label-2" "label-3" "label-4" 2)
-    (is (= 2.0 (apply prom/sum histogram-four-labels (label-range 5)))))
+    (is (= 2.0 (:histogram/sum (apply prom/get histogram-four-labels (label-range 5))))))
 
   (testing "Use Timer on Histogram with Five Labels"
     (prom/clear! histogram-five-labels)
     (let [timer (apply prom/timer histogram-five-labels (label-range 6))]
       (Thread/sleep 1)
       (prom/observe-duration! timer))
-    (is (pos? (apply prom/sum histogram-five-labels (label-range 6)))))
+    (is (pos? (:histogram/sum (apply prom/get histogram-five-labels (label-range 6))))))
 
   (testing "Use Observe on Histogram with Five Labels"
     (prom/clear! histogram-five-labels)
     (prom/observe! histogram-five-labels "label-1" "label-2" "label-3" "label-4"
                    "label-5" 2)
-    (is (= 2.0 (apply prom/sum histogram-five-labels (label-range 6)))))
+    (is (= 2.0 (:histogram/sum (apply prom/get histogram-five-labels (label-range 6))))))
 
   (testing "Increment not Possible"
     (is (thrown? Exception (prom/inc! histogram)))))
