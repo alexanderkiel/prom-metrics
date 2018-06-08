@@ -405,6 +405,11 @@
 (defprotocol Timer
   (observe-duration- [x]))
 
+(defn timer?
+  "Returns `true` if x is a timer, else `false`."
+  [x]
+  (satisfies? Timer x))
+
 (defmacro extend-protocol-timer [& classes]
   `(extend-protocol Timer
      ~@(mapcat

@@ -231,6 +231,9 @@
   (testing "Increment not Possible"
     (is (thrown? Exception (prom/inc! histogram)))))
 
+(deftest timer?-test
+  (is (prom/timer? (prom/timer histogram))))
+
 (comment
   (require '[criterium.core :refer [quick-bench bench]])
 
