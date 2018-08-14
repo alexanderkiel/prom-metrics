@@ -8,7 +8,6 @@
   :pedantic? :abort
 
   :dependencies [[io.prometheus/simpleclient "0.5.0"]
-                 [io.prometheus/simpleclient_hotspot "0.5.0"]
                  [io.prometheus/simpleclient_common "0.5.0"]
                  [org.clojure/clojure "1.9.0"]]
 

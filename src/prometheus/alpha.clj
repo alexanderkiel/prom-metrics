@@ -7,14 +7,10 @@
                           SimpleCollector Histogram$Timer Summary Summary$Timer
                           Summary$Child]
     [io.prometheus.client.exporter.common TextFormat]
-    [io.prometheus.client.hotspot DefaultExports]
     [java.io StringWriter Closeable])
   (:refer-clojure :exclude [get]))
 
 (set! *warn-on-reflection* true)
-
-(defn register-default-exports! []
-  (DefaultExports/initialize))
 
 (defn collector? [x]
   (instance? Collector x))
