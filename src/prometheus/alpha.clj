@@ -5,7 +5,7 @@
     [io.prometheus.client Counter Histogram Counter$Child Histogram$Child
                           CollectorRegistry Gauge Gauge$Child Collector
                           SimpleCollector Histogram$Timer Summary Summary$Timer
-                          Summary$Child Histogram$Child$Value]
+                          Summary$Child]
     [io.prometheus.client.exporter.common TextFormat]
     [io.prometheus.client.hotspot DefaultExports]
     [java.io StringWriter Closeable])
