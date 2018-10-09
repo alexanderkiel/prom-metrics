@@ -98,12 +98,6 @@
   ([x label-1 label-2 label-3 & labels]
    (collector- x label-1 label-2 label-3 labels)))
 
-(defn swap-collector [old new]
-  (when (instance? Collector old)
-    (.unregister (CollectorRegistry/defaultRegistry) old))
-  (.register (CollectorRegistry/defaultRegistry) new)
-  new)
-
 (defn- collector-name [name]
   (str/replace name \- \_))
 
@@ -122,9 +116,9 @@
 (defmacro defcounter
   "Defines a counter as var with name.
 
-  Metrics are required to have a name and a help text. An optional namespace and
-  subsystem can be defined via attr-map. The metrics name can be overridden by
-  name in attr-map. Per default the var name is used with dashes replaced by
+  Metrics are required to have a name and a help text. An optional :namespace and
+  :subsystem can be defined via attr-map. The metrics name can be overridden by
+  :name in attr-map. Per default, the var name is used with dashes replaced by
   underscores. The full name of the metric is `namespace_subsystem_name` and has
   to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
 
@@ -132,13 +126,11 @@
   defined with two labels has two dimensions for which you have to supply values
   when incrementing.
 
-  Replaces already defined collectors with the same name."
+  Counters have to be registered in a `CollectorRegistry` in order to be
+  available for `dump-metrics`."
   {:arglists '([name help attr-map? & label-names])}
   [name help & more]
-  `(let [c# (create-counter ~(clojure.core/name name) ~help ~@more)
-         v# (def ~name)]
-     (alter-var-root v# swap-collector c#)
-     v#))
+  `(def ~name (create-counter ~(clojure.core/name name) ~help ~@more)))
 
 (defn create-gauge [name help & more]
   (let [{:keys [namespace subsystem] :as attr-map} (when (map? (first more)) (first more))
@@ -155,9 +147,9 @@
 (defmacro defgauge
   "Defines a gauge as var with name.
 
-  Metrics are required to have a name and a help text. An optional namespace and
-  subsystem can be defined via attr-map. The metrics name can be overridden by
-  name in attr-map. Per default the var name is used with dashes replaced by
+  Metrics are required to have a name and a help text. An optional :namespace and
+  :subsystem can be defined via attr-map. The metrics name can be overridden by
+  :name in attr-map. Per default the var name is used with dashes replaced by
   underscores. The full name of the metric is `namespace_subsystem_name` and has
   to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
 
@@ -165,13 +157,11 @@
   defined with two labels has two dimensions for which you have to supply values
   when incrementing.
 
-  Replaces already defined collectors with the same name."
+  Gauges have to be registered in a `CollectorRegistry` in order to be available
+  for `dump-metrics`."
   {:arglists '([name help attr-map? & label-names])}
   [name help & more]
-  `(let [c# (create-gauge ~(clojure.core/name name) ~help ~@more)
-         v# (def ~name)]
-     (alter-var-root v# swap-collector c#)
-     v#))
+  `(def ~name (create-gauge ~(clojure.core/name name) ~help ~@more)))
 
 (defn create-histogram [name help & more]
   (let [{:keys [namespace subsystem] :as attr-map} (when (map? (first more)) (first more))
@@ -190,9 +180,9 @@
 (defmacro defhistogram
   "Defines a histogram as var with name.
 
-  Metrics are required to have a name and a help text. An optional namespace and
-  subsystem can be defined via attr-map. The metrics name can be overridden by
-  name in attr-map. Per default the var name is used with dashes replaced by
+  Metrics are required to have a name and a help text. An optional :namespace and
+  :subsystem can be defined via attr-map. The metrics name can be overridden by
+  :name in attr-map. Per default the var name is used with dashes replaced by
   underscores. The full name of the metric is `namespace_subsystem_name` and has
   to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
 
@@ -202,13 +192,11 @@
   defined with two labels has two dimensions for which you have to supply values
   when incrementing.
 
-  Replaces already defined collectors with the same name."
+  Histograms have to be registered in a `CollectorRegistry` in order to be
+  available for `dump-metrics`."
   {:arglists '([name help attr-map? buckets & label-names])}
   [name help & more]
-  `(let [c# (create-histogram ~(clojure.core/name name) ~help ~@more)
-         v# (def ~name)]
-     (alter-var-root v# swap-collector c#)
-     v#))
+  `(def ~name (create-histogram ~(clojure.core/name name) ~help ~@more)))
 
 (defprotocol Clear
   (clear- [x]))
@@ -423,11 +411,13 @@
   (observe-duration- timer))
 
 (defn dump-metrics
-  "Dumps metrics of the default registry using simple client's text format."
-  []
-  (let [registry (CollectorRegistry/defaultRegistry)
-        writer (StringWriter.)]
-    (TextFormat/write004 writer (.metricFamilySamples registry))
-    {:status 200
-     :headers {"Content-Type" TextFormat/CONTENT_TYPE_004}
-     :body (.toString writer)}))
+  "Dumps metrics of the given or default registry using simple client's text
+  format."
+  ([]
+    (dump-metrics (CollectorRegistry/defaultRegistry)))
+  ([^CollectorRegistry registry]
+   (let [writer (StringWriter.)]
+     (TextFormat/write004 writer (.metricFamilySamples registry))
+     {:status 200
+      :headers {"Content-Type" TextFormat/CONTENT_TYPE_004}
+      :body (.toString writer)})))
