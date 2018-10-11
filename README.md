@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/alexanderkiel/prom-metrics.svg?branch=master)](https://travis-ci.org/alexanderkiel/prom-metrics)
 [![Dependencies Status](https://versions.deps.co/alexanderkiel/prom-metrics/status.svg)](https://versions.deps.co/alexanderkiel/prom-metrics)
 [![Downloads](https://versions.deps.co/alexanderkiel/prom-metrics/downloads.svg)](https://versions.deps.co/alexanderkiel/prom-metrics)
+[![cljdoc badge](https://cljdoc.xyz/badge/prom-metrics/prom-metrics)](https://cljdoc.xyz/d/prom-metrics/prom-metrics/CURRENT)
 
 A Clojure library designed to provide wrappers for Prometheus [SimpleClient](https://github.com/prometheus/client_java) metrics.
 
