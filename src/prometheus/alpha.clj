@@ -114,11 +114,11 @@
         (.create))))
 
 (defmacro defcounter
-  "Defines a counter as var with name.
+  "Defines a counter as var with `name`.
 
   Metrics are required to have a name and a help text. An optional :namespace and
-  :subsystem can be defined via attr-map. The metrics name can be overridden by
-  :name in attr-map. Per default, the var name is used with dashes replaced by
+  :subsystem can be defined via `attr-map`. The metrics name can be overridden by
+  :name in `attr-map`. Per default, the var name is used with dashes replaced by
   underscores. The full name of the metric is `namespace_subsystem_name` and has
   to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
 
@@ -145,11 +145,11 @@
         (.create))))
 
 (defmacro defgauge
-  "Defines a gauge as var with name.
+  "Defines a gauge as var with `name`.
 
   Metrics are required to have a name and a help text. An optional :namespace and
-  :subsystem can be defined via attr-map. The metrics name can be overridden by
-  :name in attr-map. Per default the var name is used with dashes replaced by
+  :subsystem can be defined via `attr-map`. The metrics name can be overridden by
+  :name in `attr-map`. Per default the var name is used with dashes replaced by
   underscores. The full name of the metric is `namespace_subsystem_name` and has
   to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
 
@@ -178,11 +178,11 @@
         (.create))))
 
 (defmacro defhistogram
-  "Defines a histogram as var with name.
+  "Defines a histogram as var with `name`.
 
   Metrics are required to have a name and a help text. An optional :namespace and
-  :subsystem can be defined via attr-map. The metrics name can be overridden by
-  :name in attr-map. Per default the var name is used with dashes replaced by
+  :subsystem can be defined via `attr-map`. The metrics name can be overridden by
+  :name in `attr-map`. Per default the var name is used with dashes replaced by
   underscores. The full name of the metric is `namespace_subsystem_name` and has
   to conform to `/[a-zA-Z_:][a-zA-Z0-9_:]*/`.
 
