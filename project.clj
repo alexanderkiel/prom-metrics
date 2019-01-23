@@ -16,6 +16,9 @@
    {:dependencies
     [[criterium "0.4.4"]
      [org.clojure/clojure "1.10.0"]]}
+   :1.10
+   {:dependencies
+    [[org.clojure/clojure "1.10.0"]]}
    :1.9
    {:dependencies
     [[org.clojure/clojure "1.9.0"]]}

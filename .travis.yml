@@ -9,6 +9,11 @@ env:
   - CLJV=1.7
   - CLJV=1.8
   - CLJV=1.9
+  - CLJV=1.10
+matrix:
+  exclude:
+    - jdk: openjdk7
+      env: CLJV=1.10
 lein: 2.8.1
 script:
   - lein with-profile $CLJV test
