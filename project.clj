@@ -15,7 +15,10 @@
   {:dev
    {:dependencies
     [[criterium "0.4.4"]
-     [org.clojure/clojure "1.9.0"]]}
+     [org.clojure/clojure "1.10.0"]]}
+   :1.9
+   {:dependencies
+    [[org.clojure/clojure "1.9.0"]]}
    :1.8
    {:dependencies
     [[org.clojure/clojure "1.8.0"]]}

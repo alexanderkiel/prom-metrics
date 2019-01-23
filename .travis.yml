@@ -10,4 +10,5 @@ script:
   - lein with-profile 1.6 test
   - lein with-profile 1.7 test
   - lein with-profile 1.8 test
+  - lein with-profile 1.9 test
   - lein test
