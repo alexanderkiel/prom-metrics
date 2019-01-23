@@ -8,8 +8,8 @@
   :pedantic? :abort
 
   :dependencies
-  [[io.prometheus/simpleclient "0.5.0"]
-   [io.prometheus/simpleclient_common "0.5.0"]]
+  [[io.prometheus/simpleclient "0.6.0"]
+   [io.prometheus/simpleclient_common "0.6.0"]]
 
   :profiles
   {:dev
