@@ -8,14 +8,17 @@
   :pedantic? :abort
 
   :dependencies
-  [[io.prometheus/simpleclient "0.6.0"]
-   [io.prometheus/simpleclient_common "0.6.0"]]
+  [[io.prometheus/simpleclient "0.8.0"]
+   [io.prometheus/simpleclient_common "0.8.0"]]
 
   :profiles
   {:dev
    {:dependencies
     [[criterium "0.4.4"]
-     [org.clojure/clojure "1.10.0"]]}
+     [org.clojure/clojure "1.10.1"]]}
+   :1.10.1
+   {:dependencies
+    [[org.clojure/clojure "1.10.1"]]}
    :1.10
    {:dependencies
     [[org.clojure/clojure "1.10.0"]]}
