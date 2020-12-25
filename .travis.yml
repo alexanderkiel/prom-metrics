@@ -1,7 +1,9 @@
-dist: trusty
+dist: bionic
 language: clojure
 jdk:
   - openjdk7
+  - openjdk8
+  - openjdk11
   - oraclejdk8
   - oraclejdk9
 env:
@@ -14,6 +16,6 @@ matrix:
   exclude:
     - jdk: openjdk7
       env: CLJV=1.10
-lein: 2.8.1
+lein: 2.9.5
 script:
   - lein with-profile $CLJV test

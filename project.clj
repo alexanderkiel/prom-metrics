@@ -1,4 +1,4 @@
-(defproject prom-metrics "0.5-alpha.3"
+(defproject prom-metrics "0.6-SNAPSHOT"
   :description "Clojure Wrappers for the Prometheus Java Client."
   :url "https://github.com/alexanderkiel/prom-metrics"
   :license {:name "Eclipse Public License"
@@ -8,8 +8,8 @@
   :pedantic? :abort
 
   :dependencies
-  [[io.prometheus/simpleclient "0.8.0"]
-   [io.prometheus/simpleclient_common "0.8.0"]]
+  [[io.prometheus/simpleclient "0.9.0"]
+   [io.prometheus/simpleclient_common "0.9.0"]]
 
   :profiles
   {:dev
