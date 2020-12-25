@@ -25,5 +25,5 @@
    :ns-default hf.depstar
    :exec-args
    {:sync-pom true
-    :version "0.6-SNAPSHOT"
+    :version "0.5-alpha.4"
     :jar "target/prom-metrics.jar"}}}}

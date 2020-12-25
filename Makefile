@@ -11,4 +11,7 @@ build:
 clean:
 	rm -rf .clj-kondo/.cache .cpcache target
 
+deploy:
+	mvn deploy:deploy-file -Dfile=target/prom-metrics.jar -DpomFile=pom.xml -DrepositoryId=clojars -Durl=https://clojars.org/repo/
+
 .PHONY: lint test build clean
