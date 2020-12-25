@@ -1,7 +1,6 @@
 # Prometheus Metrics
 
 [![Build Status](https://github.com/alexanderkiel/prom-metrics/workflows/Build/badge.svg)](https://github.com/alexanderkiel/prom-metrics/actions)
-[![Dependencies Status](https://versions.deps.co/alexanderkiel/prom-metrics/status.svg)](https://versions.deps.co/alexanderkiel/prom-metrics)
 [![Downloads](https://versions.deps.co/alexanderkiel/prom-metrics/downloads.svg)](https://versions.deps.co/alexanderkiel/prom-metrics)
 [![cljdoc badge](https://cljdoc.xyz/badge/prom-metrics/prom-metrics)](https://cljdoc.xyz/d/prom-metrics/prom-metrics/CURRENT)
 
@@ -43,7 +42,7 @@ Create a compojure route so that the prometheus server can poll your application
 
 ## License
 
-Copyright © 2017 Alexander Kiel
+Copyright © 2020 Alexander Kiel
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
