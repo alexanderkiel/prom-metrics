@@ -1,6 +1,6 @@
 (ns prometheus.alpha-test
   (:require
-    [clojure.test :refer :all]
+    [clojure.test :refer [deftest is testing]]
     [prometheus.alpha :as prom :refer [defcounter defgauge defhistogram]]))
 
 (set! *warn-on-reflection* true)

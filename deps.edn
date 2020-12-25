@@ -1,0 +1,19 @@
+{:deps
+ {io.prometheus/simpleclient {:mvn/version "0.9.0"}
+  io.prometheus/simpleclient_common {:mvn/version "0.9.0"}}
+
+ :aliases
+ {:test
+  {:extra-paths ["test"]
+
+   :extra-deps
+   {lambdaisland/kaocha
+    {:mvn/version "1.0.732"}}
+
+   :main-opts ["-m" "kaocha.runner"]}
+
+  :test-perf
+  {:extra-paths ["test"]
+
+   :extra-deps
+   {criterium/criterium {:mvn/version "0.4.6"}}}}}
