@@ -16,4 +16,14 @@
   {:extra-paths ["test"]
 
    :extra-deps
-   {criterium/criterium {:mvn/version "0.4.6"}}}}}
+   {criterium/criterium {:mvn/version "0.4.6"}}}
+
+  :depstar
+  {:replace-deps
+   {seancorfield/depstar {:mvn/version "2.0.161"}}
+
+   :ns-default hf.depstar
+   :exec-args
+   {:sync-pom true
+    :version "0.6-SNAPSHOT"
+    :jar "target/prom-metrics.jar"}}}}
