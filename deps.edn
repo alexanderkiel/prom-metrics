@@ -1,6 +1,6 @@
 {:deps
- {io.prometheus/simpleclient {:mvn/version "0.9.0"}
-  io.prometheus/simpleclient_common {:mvn/version "0.9.0"}}
+ {io.prometheus/simpleclient {:mvn/version "0.10.0"}
+  io.prometheus/simpleclient_common {:mvn/version "0.10.0"}}
 
  :aliases
  {:test
@@ -20,10 +20,18 @@
 
   :depstar
   {:replace-deps
-   {seancorfield/depstar {:mvn/version "2.0.161"}}
+   {seancorfield/depstar {:mvn/version "2.0.188"}}
 
    :ns-default hf.depstar
    :exec-args
    {:sync-pom true
     :version "0.6-alpha.1"
-    :jar "target/prom-metrics.jar"}}}}
+    :jar "target/prom-metrics.jar"}}
+
+  :outdated
+  {:replace-deps
+   {antq/antq {:mvn/version "0.11.2"}
+
+    org.slf4j/slf4j-nop {:mvn/version "1.7.30"}}
+
+   :main-opts ["-m" "antq.core"]}}}
