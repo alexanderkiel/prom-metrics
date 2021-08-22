@@ -1,6 +1,6 @@
 {:deps
- {io.prometheus/simpleclient {:mvn/version "0.10.0"}
-  io.prometheus/simpleclient_common {:mvn/version "0.10.0"}}
+ {io.prometheus/simpleclient {:mvn/version "0.11.0"}
+  io.prometheus/simpleclient_common {:mvn/version "0.11.0"}}
 
  :aliases
  {:test
@@ -8,7 +8,7 @@
 
    :extra-deps
    {lambdaisland/kaocha
-    {:mvn/version "1.0.732"}}
+    {:mvn/version "1.0.861"}}
 
    :main-opts ["-m" "kaocha.runner"]}
 
@@ -20,7 +20,7 @@
 
   :depstar
   {:replace-deps
-   {seancorfield/depstar {:mvn/version "2.0.188"}}
+   {com.github.seancorfield/depstar {:mvn/version "2.1.278"}}
 
    :ns-default hf.depstar
    :exec-args
@@ -30,8 +30,8 @@
 
   :outdated
   {:replace-deps
-   {antq/antq {:mvn/version "0.11.2"}
+   {com.github.liquidz/antq {:mvn/version "0.16.3"}
 
-    org.slf4j/slf4j-nop {:mvn/version "1.7.30"}}
+    org.slf4j/slf4j-nop {:mvn/version "1.7.32"}}
 
    :main-opts ["-m" "antq.core"]}}}

@@ -10,35 +10,37 @@ jobs:
         - '8'
         - '11'
         - '14'
+        - '15'
+        - '16'
 
     runs-on: ubuntu-20.04
 
     steps:
     - name: Setup Java
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
+        distribution: 'adopt'
         java-version: ${{ matrix.java-version }}
-        java-package: jdk
 
     - name: Setup Clojure
-      uses: DeLaGuardo/setup-clojure@master
+      uses: DeLaGuardo/setup-clojure@3.5
       with:
-        tools-deps: '1.10.1.716'
+        cli: '1.10.3.949'
 
     - name: Setup clj-kondo
       uses: DeLaGuardo/setup-clj-kondo@master
       with:
-        version: '2020.11.07'
+        version: '2021.08.06'
 
     - name: Cache Local Maven Repo
-      uses: actions/cache@v2.1.4
+      uses: actions/cache@v2
       with:
         path: |
           ~/.m2/repository
         key: ${{ runner.os }}-maven-repo-root
 
     - name: Check out Git repository
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
 
     - name: Lint
       run: make lint
