@@ -1,6 +1,9 @@
 {:deps
- {io.prometheus/simpleclient {:mvn/version "0.11.0"}
-  io.prometheus/simpleclient_common {:mvn/version "0.11.0"}}
+ {io.prometheus/simpleclient
+  {:mvn/version "0.14.1"}
+
+  io.prometheus/simpleclient_common
+  {:mvn/version "0.14.1"}}
 
  :aliases
  {:test
@@ -8,30 +11,34 @@
 
    :extra-deps
    {lambdaisland/kaocha
-    {:mvn/version "1.0.861"}}
+    {:mvn/version "1.60.977"}}
 
-   :main-opts ["-m" "kaocha.runner"]}
+   :main-opts   ["-m" "kaocha.runner"]}
 
   :test-perf
   {:extra-paths ["test"]
 
    :extra-deps
-   {criterium/criterium {:mvn/version "0.4.6"}}}
+   {criterium/criterium
+    {:mvn/version "0.4.6"}}}
 
   :depstar
   {:replace-deps
-   {com.github.seancorfield/depstar {:mvn/version "2.1.278"}}
+   {com.github.seancorfield/depstar
+    {:mvn/version "2.1.303"}}
 
    :ns-default hf.depstar
    :exec-args
    {:sync-pom true
-    :version "0.6-alpha.3"
-    :jar "target/prom-metrics.jar"}}
+    :version  "0.6-alpha.3"
+    :jar      "target/prom-metrics.jar"}}
 
   :outdated
   {:replace-deps
-   {com.github.liquidz/antq {:mvn/version "0.16.3"}
+   {com.github.liquidz/antq
+    {:mvn/version "1.3.1"}
 
-    org.slf4j/slf4j-nop {:mvn/version "1.7.32"}}
+    org.slf4j/slf4j-nop
+    {:mvn/version "1.7.32"}}
 
    :main-opts ["-m" "antq.core"]}}}
