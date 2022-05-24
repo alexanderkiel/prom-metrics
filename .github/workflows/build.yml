@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Setup Java
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java-version }}
@@ -23,21 +23,21 @@ jobs:
     - name: Setup Clojure
       uses: DeLaGuardo/setup-clojure@master
       with:
-        cli: '1.10.3.1053'
+        cli: '1.11.1.1113'
 
     - name: Setup clj-kondo
       uses: DeLaGuardo/setup-clj-kondo@master
       with:
-        version: '2021.12.19'
+        version: '2022.04.25'
 
     - name: Cache Local Maven Repo
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-repo-root
 
     - name: Check out Git repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Lint
       run: make lint
