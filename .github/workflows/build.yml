@@ -23,12 +23,12 @@ jobs:
     - name: Setup Clojure
       uses: DeLaGuardo/setup-clojure@master
       with:
-        cli: '1.11.1.1145'
+        cli: '1.11.1.1165'
 
     - name: Setup clj-kondo
       uses: DeLaGuardo/setup-clj-kondo@master
       with:
-        version: '2022.05.31'
+        version: '2022.09.08'
 
     - name: Cache Local Maven Repo
       uses: actions/cache@v3
