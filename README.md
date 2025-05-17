@@ -42,7 +42,7 @@ Create a compojure route so that the prometheus server can poll your application
 
 ## License
 
-Copyright © 2017-2022 Alexander Kiel
+Copyright © 2017-2025 Alexander Kiel
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
